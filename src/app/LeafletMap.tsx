@@ -1,6 +1,8 @@
 "use client";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import WrecksLayer from "./components/WrecksLayer";
+import { ProtectedAreasLayer } from "./components/WrecksLayer";
 
 export default function LeafletMap() {
   return (
@@ -15,14 +17,16 @@ export default function LeafletMap() {
       }}
     >
       <MapContainer
-        center={[48.8584, 2.2945]}
-        zoom={5}
+        center={[43.2965, 5.3698]}
+        zoom={8}
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer
           attribution="&copy; <a href='https://osm.org/copyright'>OpenStreetMap</a> contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <WrecksLayer />
+        <ProtectedAreasLayer />
       </MapContainer>
     </div>
   );
