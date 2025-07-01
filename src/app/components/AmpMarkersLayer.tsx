@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Marker, Popup } from "react-leaflet";
 import L, { LatLngBounds } from "leaflet";
 import MapLoader from "./MapLoader";
+import { getAmpCategoryInfo } from "./ampCategoryMap";
 
 interface AmpFeature {
   geometry: { type: "Point"; coordinates: [number, number] };
@@ -11,6 +12,7 @@ interface AmpFeature {
     description?: string;
     url?: string;
     amp_name?: string;
+    category?: number;
     [key: string]: unknown;
   };
 }
@@ -70,6 +72,9 @@ export default function AmpMarkersLayer({ bounds }: AmpMarkersLayerProps) {
             if (!coords) return null;
             const [lng, lat] = coords;
             const props = feature.properties || {};
+            const categoryInfo = getAmpCategoryInfo(
+              props.category as import("./ampCategoryMap").AmpCategory
+            );
             return (
               <Marker key={idx} position={[lat, lng]} icon={markerIcon}>
                 <Popup>
@@ -85,6 +90,13 @@ export default function AmpMarkersLayer({ bounds }: AmpMarkersLayerProps) {
                         {props.title as string}
                       </div>
                     )}
+                    <div
+                      className={`amp-category-label amp-category-label-${categoryInfo.label
+                        .replace(/[^a-z0-9]+/gi, "-")
+                        .toLowerCase()}`}
+                    >
+                      {categoryInfo.label}
+                    </div>
                     {props.header_text && (
                       <div
                         style={{

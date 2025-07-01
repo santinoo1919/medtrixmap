@@ -108,3 +108,25 @@ a {
 .leaflet-popup-content-wrapper {
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.06);
 }
+
+.amp-category-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+.amp-category-label-birds {
+  color: #60a5fa;
+}
+.amp-category-label-marine-fauna {
+  color: #f59e42;
+}
+.amp-category-label-habitats-flora {
+  color: #34d399;
+}
+.amp-category-label-human-activities {
+  color: #f87171;
+}
+.amp-category-label-other {
+  color: #a3a3a3;
+}
