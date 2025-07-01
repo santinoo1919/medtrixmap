@@ -1,8 +1,6 @@
 "use client";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import WrecksLayer from "./components/WrecksLayer";
-import { ProtectedAreasLayer } from "./components/WrecksLayer";
 
 export default function LeafletMap() {
   return (
@@ -25,8 +23,6 @@ export default function LeafletMap() {
           attribution="&copy; <a href='https://osm.org/copyright'>OpenStreetMap</a> contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <WrecksLayer />
-        <ProtectedAreasLayer />
       </MapContainer>
     </div>
   );
