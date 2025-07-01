@@ -1,8 +1,6 @@
 import Image from "next/image";
 import styles from "./page.module.css";
-import dynamic from "next/dynamic";
-
-const LeafletMap = dynamic(() => import("./LeafletMap"), { ssr: false });
+import MapClientWrapper from "./MapClientWrapper";
 
 export default function Home() {
   return (
@@ -48,7 +46,7 @@ export default function Home() {
             Read our docs
           </a>
         </div>
-        <LeafletMap />
+        <MapClientWrapper />
       </main>
       <footer className={styles.footer}>
         <a
