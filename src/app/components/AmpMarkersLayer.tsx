@@ -37,7 +37,7 @@ export default function AmpMarkersLayer() {
 
   return (
     <>
-      {features.map((feature, idx) => {
+      {features.map((feature: AmpFeature, idx: number) => {
         const coords = feature.geometry?.coordinates;
         if (!coords) return null;
         const [lng, lat] = coords;

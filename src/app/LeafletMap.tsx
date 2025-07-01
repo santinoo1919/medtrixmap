@@ -17,9 +17,6 @@ interface GeoJSONFeatureCollection {
   }>;
 }
 
-const AMP_GEOJSON_URL =
-  "https://www.amp.milieumarinfrance.fr/api/1/98/31/get_amp_geojson";
-
 export default function LeafletMap() {
   const [areas, setAreas] = useState<GeoJSONFeatureCollection | null>(null);
 
