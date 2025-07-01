@@ -16,19 +16,6 @@ interface GeoJSONFeatureCollection {
   }>;
 }
 
-// Mapping of property keys to friendly labels (updated for actual data)
-const PROPERTY_LABELS: Record<string, string> = {
-  des_desigfr: "Designation (FR)",
-  des_desigtype: "Designation Type",
-  mpa_status: "Status",
-  mpa_datebegin: "Designation Date",
-  mpa_calcarea: "Area (ha)",
-  subloc_name: "Sub-location",
-  country_iso3namefr: "Country (FR)",
-  iucn_idiucn: "IUCN Category",
-  mpa_url: "Official URL",
-};
-
 export default function LeafletMap() {
   const [areas, setAreas] = useState<GeoJSONFeatureCollection | null>(null);
 
