@@ -58,7 +58,6 @@ export default function AmpMarkersLayer({ bounds }: AmpMarkersLayerProps) {
       : features;
     setTimeout(() => setFiltering(false), 150);
     return result;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [features, bounds, loading]);
 
   return (

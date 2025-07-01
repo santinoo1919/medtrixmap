@@ -27,7 +27,6 @@ export default function ProtectedAreasLayer({
   const [areas, setAreas] = useState<ProtectedAreaFeature[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtering, setFiltering] = useState(false);
-  const [lastBounds, setLastBounds] = useState<LatLngBounds | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -41,19 +40,23 @@ export default function ProtectedAreasLayer({
   function isInBounds(geometry: Geometry): boolean {
     if (!bounds) return true;
     if (geometry.type === "Polygon") {
-      return geometry.coordinates.some((ring: any) =>
-        ring.some((coord: [number, number]) =>
-          bounds.contains([coord[1], coord[0]])
-        )
-      );
-    }
-    if (geometry.type === "MultiPolygon") {
-      return geometry.coordinates.some((polygon: any) =>
-        polygon.some((ring: any) =>
+      // Polygon: coordinates is [ [ [lng, lat], ... ] ]
+      return (geometry.coordinates as [number, number][][]).some(
+        (ring: [number, number][]) =>
           ring.some((coord: [number, number]) =>
             bounds.contains([coord[1], coord[0]])
           )
-        )
+      );
+    }
+    if (geometry.type === "MultiPolygon") {
+      // MultiPolygon: coordinates is [ [ [ [lng, lat], ... ] ] ]
+      return (geometry.coordinates as [number, number][][][]).some(
+        (polygon: [number, number][][]) =>
+          polygon.some((ring: [number, number][]) =>
+            ring.some((coord: [number, number]) =>
+              bounds.contains([coord[1], coord[0]])
+            )
+          )
       );
     }
     return false;

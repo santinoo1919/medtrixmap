@@ -1,29 +1,10 @@
 "use client";
-import {
-  MapContainer,
-  TileLayer,
-  GeoJSON,
-  Popup,
-  useMapEvents,
-} from "react-leaflet";
+import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { useEffect, useState, useRef } from "react";
-import type { Geometry } from "geojson";
-import ProtectedAreaPopup from "./components/ProtectedAreaPopup";
+import { useState, useRef } from "react";
 import AmpMarkersLayer from "./components/AmpMarkersLayer";
 import { LatLngBounds } from "leaflet";
 import ProtectedAreasLayer from "./components/ProtectedAreasLayer";
-
-// Minimal GeoJSON FeatureCollection type
-interface GeoJSONFeatureCollection {
-  type: "FeatureCollection";
-  features: Array<{
-    type: "Feature";
-    geometry: Geometry;
-    properties: Record<string, unknown>;
-    id?: string | number;
-  }>;
-}
 
 function MapBoundsListener({
   onBoundsChange,
@@ -66,7 +47,13 @@ export default function LeafletMap() {
         center={[43.2965, 5.3698]}
         zoom={8}
         style={{ height: "100%", width: "100%" }}
-        whenReady={(map) => setBounds((map as any).target.getBounds())}
+        whenReady={(map) =>
+          setBounds(
+            (
+              map as unknown as { target: { getBounds: () => LatLngBounds } }
+            ).target.getBounds()
+          )
+        }
       >
         <MapBoundsListener onBoundsChange={setBounds} />
         <TileLayer
