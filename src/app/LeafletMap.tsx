@@ -4,7 +4,16 @@ import "leaflet/dist/leaflet.css";
 
 export default function LeafletMap() {
   return (
-    <div style={{ height: "80vh", width: "100%" }}>
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 0,
+      }}
+    >
       <MapContainer
         center={[48.8584, 2.2945]}
         zoom={5}
