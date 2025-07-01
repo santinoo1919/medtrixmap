@@ -2,8 +2,8 @@
 import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useState, useRef } from "react";
+import { Map as LeafletMap, LatLngBounds } from "leaflet";
 import AmpMarkersLayer from "./components/AmpMarkersLayer";
-import { LatLngBounds } from "leaflet";
 import ProtectedAreasLayer from "./components/ProtectedAreasLayer";
 
 function MapBoundsListener({
@@ -29,8 +29,9 @@ function MapBoundsListener({
   return null;
 }
 
-export default function LeafletMap() {
+export default function LeafletMapComponent() {
   const [bounds, setBounds] = useState<LatLngBounds | null>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
 
   return (
     <div
@@ -47,13 +48,10 @@ export default function LeafletMap() {
         center={[43.2965, 5.3698]}
         zoom={8}
         style={{ height: "100%", width: "100%" }}
-        whenReady={(map) =>
-          setBounds(
-            (
-              map as unknown as { target: { getBounds: () => LatLngBounds } }
-            ).target.getBounds()
-          )
-        }
+        ref={mapRef}
+        whenReady={() => {
+          if (mapRef.current) setBounds(mapRef.current.getBounds());
+        }}
       >
         <MapBoundsListener onBoundsChange={setBounds} />
         <TileLayer
