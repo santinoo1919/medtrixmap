@@ -1,6 +1,8 @@
 import Image from "next/image";
 import styles from "./page.module.css";
-import LeafletMap from "./LeafletMap";
+import dynamic from "next/dynamic";
+
+const LeafletMap = dynamic(() => import("./LeafletMap"), { ssr: false });
 
 export default function Home() {
   return (
