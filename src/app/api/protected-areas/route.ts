@@ -1,5 +1,19 @@
 import { NextResponse } from "next/server";
 
+// Minimal GeoJSON FeatureCollection type
+interface GeoJSONFeatureCollection {
+  type: "FeatureCollection";
+  features: Array<{
+    type: "Feature";
+    geometry: {
+      type: string;
+      coordinates: unknown;
+    };
+    properties: Record<string, unknown>;
+    id?: string | number;
+  }>;
+}
+
 export async function GET() {
   const url =
     "https://wxs.ofb.fr/geoserver/gestion/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=gestion:ges_omon_amp_ofb_pol_3857_vue&outputFormat=application/json&srsName=EPSG:4326&count=10";
@@ -17,10 +31,11 @@ export async function GET() {
         { status: 500 }
       );
     }
-    const data = await res.json();
+    const data = (await res.json()) as GeoJSONFeatureCollection;
     return NextResponse.json(data);
-  } catch (err: any) {
-    console.error("WFS fetch error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("WFS fetch error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
