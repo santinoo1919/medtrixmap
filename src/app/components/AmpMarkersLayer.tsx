@@ -10,7 +10,7 @@ interface AmpFeature {
     description?: string;
     url?: string;
     amp_name?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -54,25 +54,25 @@ export default function AmpMarkersLayer() {
                       marginBottom: 4,
                     }}
                   >
-                    {props.title}
+                    {props.title as string}
                   </div>
                 )}
                 {props.header_text && (
                   <div
                     style={{ fontSize: 13, color: "#2563eb", marginBottom: 4 }}
                   >
-                    {props.header_text}
+                    {props.header_text as string}
                   </div>
                 )}
                 {props.description && (
                   <div style={{ fontSize: 13, color: "#444", marginBottom: 4 }}>
-                    {props.description}
+                    {props.description as string}
                   </div>
                 )}
                 {props.url && (
                   <img
-                    src={props.url}
-                    alt={props.title || ""}
+                    src={props.url as string}
+                    alt={(props.title as string) || ""}
                     style={{ width: "100%", borderRadius: 6, marginTop: 6 }}
                   />
                 )}
