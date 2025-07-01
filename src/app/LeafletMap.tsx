@@ -2,16 +2,14 @@
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
+import type { Geometry } from "geojson";
 
 // Minimal GeoJSON FeatureCollection type
 interface GeoJSONFeatureCollection {
   type: "FeatureCollection";
   features: Array<{
     type: "Feature";
-    geometry: {
-      type: string;
-      coordinates: unknown;
-    };
+    geometry: Geometry;
     properties: Record<string, unknown>;
     id?: string | number;
   }>;
@@ -53,7 +51,7 @@ export default function LeafletMap() {
             feature.geometry.type === "MultiPolygon" ? (
               <GeoJSON
                 key={feature.id || idx}
-                data={feature.geometry as any}
+                data={feature.geometry as Geometry}
                 style={{ color: "#3388ff", weight: 2, fillOpacity: 0.2 }}
                 eventHandlers={{
                   click: (e) => {
