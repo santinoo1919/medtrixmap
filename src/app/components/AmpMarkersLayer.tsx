@@ -3,6 +3,7 @@ import { Marker, Popup } from "react-leaflet";
 import L, { LatLngBounds } from "leaflet";
 import MapLoader from "./MapLoader";
 import { getAmpCategoryInfo } from "./ampCategoryMap";
+import type { AmpCategory } from "./SidePanel";
 
 interface AmpFeature {
   geometry: { type: "Point"; coordinates: [number, number] };
@@ -19,12 +20,16 @@ interface AmpFeature {
 
 interface AmpMarkersLayerProps {
   bounds: LatLngBounds | null;
+  selectedCategories: AmpCategory[];
 }
 
 const AMP_GEOJSON_URL =
   "https://www.amp.milieumarinfrance.fr/api/1/98/31/get_amp_geojson";
 
-export default function AmpMarkersLayer({ bounds }: AmpMarkersLayerProps) {
+export default function AmpMarkersLayer({
+  bounds,
+  selectedCategories,
+}: AmpMarkersLayerProps) {
   const [features, setFeatures] = useState<AmpFeature[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtering, setFiltering] = useState(false);
@@ -50,17 +55,28 @@ export default function AmpMarkersLayer({ bounds }: AmpMarkersLayerProps) {
   const filtered = useMemo(() => {
     if (loading) return [];
     setFiltering(true);
-    const result = bounds
-      ? features.filter((feature) => {
-          const coords = feature.geometry?.coordinates;
-          if (!coords) return false;
-          const [lng, lat] = coords;
-          return bounds.contains([lat, lng]);
-        })
-      : features;
+    let result = features;
+    if (bounds) {
+      result = result.filter((feature) => {
+        const coords = feature.geometry?.coordinates;
+        if (!coords) return false;
+        const [lng, lat] = coords;
+        return bounds.contains([lat, lng]);
+      });
+    }
+    // Filter by selected categories
+    if (selectedCategories.length > 0) {
+      result = result.filter((feature) =>
+        selectedCategories.includes(
+          (feature.properties.category as AmpCategory) ?? null
+        )
+      );
+    } else {
+      result = [];
+    }
     setTimeout(() => setFiltering(false), 150);
     return result;
-  }, [features, bounds, loading]);
+  }, [features, bounds, loading, selectedCategories]);
 
   return (
     <>

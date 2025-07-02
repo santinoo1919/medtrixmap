@@ -5,6 +5,9 @@ import { useState, useRef } from "react";
 import { Map as LeafletMap, LatLngBounds } from "leaflet";
 import AmpMarkersLayer from "./components/AmpMarkersLayer";
 import ProtectedAreasLayer from "./components/ProtectedAreasLayer";
+import SidePanel, { DataSource, AmpCategory } from "./components/SidePanel";
+import MapLoader from "./components/MapLoader";
+import SideMenu from "./components/SideMenu";
 
 function MapBoundsListener({
   onBoundsChange,
@@ -30,8 +33,56 @@ function MapBoundsListener({
 }
 
 export default function LeafletMapComponent() {
+  // Map state
   const [bounds, setBounds] = useState<LatLngBounds | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
+
+  // Data source state
+  const [sources, setSources] = useState<DataSource[]>([
+    { id: "protected-areas", label: "Protected Areas", enabled: true },
+    { id: "amp", label: "AMP Points of Interest", enabled: true },
+  ]);
+
+  // Loader state
+  const [isLoading, setIsLoading] = useState(false);
+
+  // AMP category filter state
+  const [selectedAmpCategories, setSelectedAmpCategories] = useState<
+    AmpCategory[]
+  >([1, 2, 3, 4, null]);
+  const handleToggleAmpCategory = (cat: AmpCategory) => {
+    setSelectedAmpCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
+  // Protected Area region filter state
+  const [regions, setRegions] = useState<string[]>([]); // TODO: Populate from data
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const handleSelectRegion = (region: string) =>
+    setSelectedRegion(region || null);
+
+  // Menu selection state
+  const [selectedMenu, setSelectedMenu] = useState<string>("layers");
+  const handleSelectMenu = (key: string) => setSelectedMenu(key);
+
+  const handleToggleSource = (id: string) => {
+    setSources((prev) =>
+      prev.map((src) =>
+        src.id === id ? { ...src, enabled: !src.enabled } : src
+      )
+    );
+    // Simulate loading for 1.5s
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+  };
+
+  const showProtectedAreas = sources.find(
+    (s) => s.id === "protected-areas"
+  )?.enabled;
+  const showAmp = sources.find((s) => s.id === "amp")?.enabled;
 
   return (
     <div
@@ -42,6 +93,7 @@ export default function LeafletMapComponent() {
         width: "100vw",
         height: "100vh",
         zIndex: 0,
+        overflow: "hidden",
       }}
     >
       <MapContainer
@@ -58,9 +110,27 @@ export default function LeafletMapComponent() {
           attribution="&copy; <a href='https://osm.org/copyright'>OpenStreetMap</a> contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <ProtectedAreasLayer bounds={bounds} />
-        <AmpMarkersLayer bounds={bounds} />
+        {showProtectedAreas && <ProtectedAreasLayer bounds={bounds} />}
+        {showAmp && (
+          <AmpMarkersLayer
+            bounds={bounds}
+            selectedCategories={selectedAmpCategories}
+          />
+        )}
       </MapContainer>
+      {isLoading && <MapLoader />}
+      {/* SidePanel is fixed to the right, with width 320px, and menu is fixed to the right with width 56px */}
+      <SidePanel
+        sources={sources}
+        onToggle={handleToggleSource}
+        selectedAmpCategories={selectedAmpCategories}
+        onToggleAmpCategory={handleToggleAmpCategory}
+        regions={regions}
+        selectedRegion={selectedRegion}
+        onSelectRegion={handleSelectRegion}
+        selectedMenu={selectedMenu}
+      />
+      <SideMenu selected={selectedMenu} onSelect={handleSelectMenu} />
     </div>
   );
 }

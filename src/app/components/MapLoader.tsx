@@ -4,14 +4,15 @@ export default function MapLoader() {
       style={{
         position: "fixed",
         top: 20,
-        right: 20,
+        left: "50%",
+        transform: "translateX(-50%)",
         width: 32,
         height: 32,
         zIndex: 2000,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "rgba(255,255,255,0.85)",
+        background: "#fff",
         borderRadius: 16,
         boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
       }}
