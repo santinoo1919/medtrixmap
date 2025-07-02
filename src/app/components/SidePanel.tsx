@@ -1,5 +1,4 @@
 import React from "react";
-import { MdPets, MdLocalFlorist, MdPeople } from "react-icons/md";
 import AmpCategoryIcon from "./AmpCategoryIcon";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { CheckIcon } from "@radix-ui/react-icons";
