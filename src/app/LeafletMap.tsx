@@ -57,7 +57,7 @@ export default function LeafletMapComponent() {
   };
 
   // Protected Area region filter state
-  const [regions, setRegions] = useState<string[]>([]); // TODO: Populate from data
+  const [regions] = useState<string[]>([]); // TODO: Populate from data
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const handleSelectRegion = (region: string) =>
     setSelectedRegion(region || null);

@@ -129,7 +129,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
               );
             })}
             {/* Placeholder sections */}
-            {PLACEHOLDER_SECTIONS.map((section, idx) => (
+            {PLACEHOLDER_SECTIONS.map((section) => (
               <div key={section.title}>
                 <div
                   style={{
