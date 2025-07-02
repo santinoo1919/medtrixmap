@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Marker, Popup } from "react-leaflet";
 import L, { LatLngBounds } from "leaflet";
 import MapLoader from "./MapLoader";
@@ -6,6 +6,7 @@ import { getAmpCategoryInfo } from "./ampCategoryMap";
 import type { AmpCategory } from "./SidePanel";
 import ReactDOMServer from "react-dom/server";
 import { AmpCategoryCircleIcon } from "./AmpCategoryIcon";
+import React from "react";
 
 interface AmpFeature {
   geometry: { type: "Point"; coordinates: [number, number] };
@@ -34,7 +35,6 @@ export default function AmpMarkersLayer({
 }: AmpMarkersLayerProps) {
   const [features, setFeatures] = useState<AmpFeature[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filtering, setFiltering] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -44,10 +44,9 @@ export default function AmpMarkersLayer({
       .finally(() => setLoading(false));
   }, []);
 
-  // Filtering logic with loader
+  // Filtering logic (no setState in useMemo)
   const filtered = useMemo(() => {
     if (loading) return [];
-    setFiltering(true);
     let result = features;
     if (bounds) {
       result = result.filter((feature) => {
@@ -67,27 +66,31 @@ export default function AmpMarkersLayer({
     } else {
       result = [];
     }
-    setTimeout(() => setFiltering(false), 150);
     return result;
   }, [features, bounds, loading, selectedCategories]);
 
-  // Helper to get a Leaflet divIcon for a category
+  // Memoize marker icons by category
+  const iconCache = useRef<Record<string, L.DivIcon>>({});
   function getCategoryDivIcon(category: AmpCategory) {
-    const html = ReactDOMServer.renderToString(
-      <AmpCategoryCircleIcon category={category} size={40} />
-    );
-    return L.divIcon({
-      html,
-      className: "amp-marker-icon",
-      iconSize: [40, 40],
-      iconAnchor: [20, 40],
-      popupAnchor: [0, -40],
-    });
+    const key = String(category);
+    if (!iconCache.current[key]) {
+      const html = ReactDOMServer.renderToString(
+        <AmpCategoryCircleIcon category={category} size={40} />
+      );
+      iconCache.current[key] = L.divIcon({
+        html,
+        className: "amp-marker-icon",
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40],
+      });
+    }
+    return iconCache.current[key];
   }
 
   return (
     <>
-      {(loading || filtering) && <MapLoader />}
+      {loading && <MapLoader />}
       {loading
         ? null
         : filtered.map((feature: AmpFeature, idx: number) => {
@@ -98,14 +101,29 @@ export default function AmpMarkersLayer({
             const category =
               props.category as import("./ampCategoryMap").AmpCategory;
             const categoryInfo = getAmpCategoryInfo(category);
+            // Use a unique id if available, otherwise append idx to ensure uniqueness
+            const markerKey = props.id
+              ? String(props.id)
+              : props.amp_name
+              ? `${props.amp_name}_${lat}_${lng}_${idx}`
+              : props.title
+              ? `${props.title}_${lat}_${lng}_${idx}`
+              : `${lat}_${lng}_${idx}`;
             return (
               <Marker
-                key={idx}
+                key={markerKey}
                 position={[lat, lng]}
                 icon={getCategoryDivIcon(category)}
               >
                 <Popup>
-                  <div style={{ minWidth: 220, maxWidth: 320 }}>
+                  <div
+                    style={{
+                      minWidth: 220,
+                      maxWidth: 320,
+                      maxHeight: "80vh",
+                      overflowY: "auto",
+                    }}
+                  >
                     {props.title && (
                       <div
                         style={{
@@ -137,7 +155,11 @@ export default function AmpMarkersLayer({
                     )}
                     {props.description && (
                       <div
-                        style={{ fontSize: 13, color: "#444", marginBottom: 4 }}
+                        style={{
+                          fontSize: 13,
+                          color: "#444",
+                          marginBottom: 4,
+                        }}
                       >
                         {props.description as string}
                       </div>
@@ -146,7 +168,11 @@ export default function AmpMarkersLayer({
                       <img
                         src={props.url as string}
                         alt={(props.title as string) || ""}
-                        style={{ width: "100%", borderRadius: 6, marginTop: 6 }}
+                        style={{
+                          width: "100%",
+                          borderRadius: 6,
+                          marginTop: 6,
+                        }}
                       />
                     )}
                   </div>
