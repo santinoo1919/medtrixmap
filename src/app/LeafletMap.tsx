@@ -7,7 +7,6 @@ import AmpMarkersLayer from "./components/AmpMarkersLayer";
 import ProtectedAreasLayer from "./components/ProtectedAreasLayer";
 import SidePanel, { DataSource, AmpCategory } from "./components/SidePanel";
 import MapLoader from "./components/MapLoader";
-import SideMenu from "./components/SideMenu";
 
 function MapBoundsListener({
   onBoundsChange,
@@ -129,8 +128,8 @@ export default function LeafletMapComponent() {
         selectedRegion={selectedRegion}
         onSelectRegion={handleSelectRegion}
         selectedMenu={selectedMenu}
+        onSelectMenu={handleSelectMenu}
       />
-      <SideMenu selected={selectedMenu} onSelect={handleSelectMenu} />
     </div>
   );
 }

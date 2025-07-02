@@ -4,6 +4,8 @@ import L, { LatLngBounds } from "leaflet";
 import MapLoader from "./MapLoader";
 import { getAmpCategoryInfo } from "./ampCategoryMap";
 import type { AmpCategory } from "./SidePanel";
+import ReactDOMServer from "react-dom/server";
+import { AmpCategoryCircleIcon } from "./AmpCategoryIcon";
 
 interface AmpFeature {
   geometry: { type: "Point"; coordinates: [number, number] };
@@ -42,15 +44,6 @@ export default function AmpMarkersLayer({
       .finally(() => setLoading(false));
   }, []);
 
-  const markerIcon = L.icon({
-    iconUrl: "/marker-icon.png",
-    shadowUrl: "/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-  });
-
   // Filtering logic with loader
   const filtered = useMemo(() => {
     if (loading) return [];
@@ -78,6 +71,20 @@ export default function AmpMarkersLayer({
     return result;
   }, [features, bounds, loading, selectedCategories]);
 
+  // Helper to get a Leaflet divIcon for a category
+  function getCategoryDivIcon(category: AmpCategory) {
+    const html = ReactDOMServer.renderToString(
+      <AmpCategoryCircleIcon category={category} size={40} />
+    );
+    return L.divIcon({
+      html,
+      className: "amp-marker-icon",
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40],
+    });
+  }
+
   return (
     <>
       {(loading || filtering) && <MapLoader />}
@@ -88,11 +95,15 @@ export default function AmpMarkersLayer({
             if (!coords) return null;
             const [lng, lat] = coords;
             const props = feature.properties || {};
-            const categoryInfo = getAmpCategoryInfo(
-              props.category as import("./ampCategoryMap").AmpCategory
-            );
+            const category =
+              props.category as import("./ampCategoryMap").AmpCategory;
+            const categoryInfo = getAmpCategoryInfo(category);
             return (
-              <Marker key={idx} position={[lat, lng]} icon={markerIcon}>
+              <Marker
+                key={idx}
+                position={[lat, lng]}
+                icon={getCategoryDivIcon(category)}
+              >
                 <Popup>
                   <div style={{ minWidth: 220, maxWidth: 320 }}>
                     {props.title && (

@@ -60,23 +60,21 @@ const MENU_ITEMS = [
 interface SideMenuProps {
   selected: string;
   onSelect: (key: string) => void;
+  style?: React.CSSProperties;
 }
 
-const SideMenu: React.FC<SideMenuProps> = ({ selected, onSelect }) => {
+const SideMenu: React.FC<SideMenuProps> = ({ selected, onSelect, style }) => {
   return (
     <div
       style={{
-        position: "fixed",
-        top: 0,
-        right: 0,
-        height: "100vh",
         width: 72,
         background: "#fff",
         borderLeft: "1px solid #f1f5f9",
-        zIndex: 3000,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        borderRadius: 16,
+        ...style,
       }}
     >
       {MENU_ITEMS.map((item) => {
@@ -88,9 +86,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ selected, onSelect }) => {
             style={{
               background: isSelected ? "#e0e7ff" : "transparent",
               border: "none",
-              borderRadius: 10,
-              padding: isSelected ? "8px 8px 4px 8px" : "8px 0 4px 0",
-              width: 56,
+              borderRadius: 6,
+              padding: isSelected ? "12px 12px 8px 12px" : "8px 0 4px 0",
+              width: isSelected ? 56 : 44,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -99,6 +97,8 @@ const SideMenu: React.FC<SideMenuProps> = ({ selected, onSelect }) => {
               boxShadow: isSelected ? "0 2px 8px rgba(37,99,235,0.08)" : "none",
               transition: "background 0.2s, padding 0.2s",
               marginTop: 4,
+              marginLeft: "auto",
+              marginRight: "auto",
             }}
             onClick={() => onSelect(item.key)}
           >
